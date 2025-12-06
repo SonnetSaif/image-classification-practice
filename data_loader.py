@@ -22,15 +22,17 @@ class CustomDataLoader(torch.utils.data.Dataset):
         
         print(f"Processing image_id: {img_id}")
 
-        img_data = self.df[self.df['img_id'] == img_id]
+        img_data = self.df[self.df['image_id'] == img_id]
 
         if img_data.empty:
             print(f"No data found for image_id: {img_id}")
             return None, None
         
-        boxes = img_data[['x1', 'y1', 'x2', 'y2']].values.astype('float32')
-        category_name  = img_data['category_name'].values[0].astype('int64')
+        boxes = img_data[['x1', 'y1', 'x2', 'y2']].values.astype('float')
+        category_name  = img_data['category_name'].values[0]
         file_name = img_data['file_name'].values[0]
+
+        category_name = category_name.capitalize()
 
         file_path = os.path.join(self.base_path, 'Bag Classes', 'Bag Classes', category_name + ' Bag Images', file_name)
         
@@ -46,7 +48,7 @@ class CustomDataLoader(torch.utils.data.Dataset):
 
         # Prepare the target dictionary with boxes and labels
         target = {}
-        target['boxes'] = torch.as_tensor(boxes, dtype=torch.float32)
+        target['boxes'] = torch.tensor(boxes, dtype=torch.float32)
         target['labels'] = labels
 
         # Convert the image to a tensor
